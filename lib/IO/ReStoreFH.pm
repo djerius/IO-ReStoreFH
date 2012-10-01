@@ -26,14 +26,14 @@ use 5.10.0;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = qv("v0.02");
+use version 0.77; our $VERSION = qv("v0.02_03");
 
-use Fcntl qw[ F_GETFL O_RDONLY O_WRONLY O_RDWR O_APPEND ];
+use FileHandle::Fmode ':all';
+
 use POSIX qw[ dup dup2 ceil floor ];
 use Symbol;
 use Carp;
 
-use IO::Handle;
 use Scalar::Util qw[ looks_like_number ];
 use Try::Tiny;
 
@@ -81,27 +81,15 @@ sub store {
         # try fcntl and look at the underlying fileno
         if ( !defined $mode ) {
 
-            eval {
-                my $flags = fcntl( $fh, F_GETFL, my $junk = '' );
-
-                $mode
-                  = $flags & O_RDONLY ? '<'
-                  : ( $flags & O_WRONLY ) && ( $flags & O_APPEND ) ? '>>'
-                  : $flags & O_WRONLY ? '>'
-                  : $flags & O_RDWR   ? '+<'
-                  :                     undef;
-            }
-
-        }
-
-        # if fcntl failed, try matching against known filehandles
-        if ( !defined $mode ) {
+	        my $rfh = 'GLOB' eq ref( \$fh ) ? \$fh : $fh;
 
             $mode
-              = $fd == fileno( STDIN )  ? '<'
-              : $fd == fileno( STDOUT ) ? '>'
-              : $fd == fileno( STDERR ) ? '>'
-              :                           undef;
+              = is_RO( $rfh )                ? '<'
+              : is_WO( $rfh )                ? '>'
+              : is_W( $rfh ) && is_R( $rfh ) ? '+<'
+              :                                undef;
+
+            $mode .= '>' if is_A( $fh );
 
         }
 
@@ -111,7 +99,7 @@ sub store {
         ) if !defined $mode;
 
 
-        # do an fdopen on the filehandle
+        # dup the filehandle
         open my $dup, $mode . '&', $fh
           or croak( "error fdopening $fh: $!\n" );
 

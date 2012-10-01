@@ -4,7 +4,7 @@ use inc::Module::Install;
 
 name 'IO-ReStoreFH';
 author 'Diab Jerius';
-license 'gpl3';
+license 'gpl';
 all_from 'lib/IO/ReStoreFH.pm';
 
 author_tests( 'xt' );

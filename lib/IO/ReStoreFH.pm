@@ -34,6 +34,7 @@ use POSIX qw[ dup dup2 ceil floor ];
 use Symbol;
 use Carp;
 
+use IO::Handle;
 use Scalar::Util qw[ looks_like_number ];
 use Try::Tiny;
 
@@ -69,7 +70,7 @@ sub store {
 
         $fd = eval { $fh->fileno };
 
-        croak( "\$fh object does not have a fileno method\n" )
+        croak( "\$fh object does not have a fileno method:$@ \n" )
           if $@;
 
         croak( "\$fh is not open\n" )

@@ -1,5 +1,49 @@
 Revision history for IO-ReStoreFH
 
+v0.02_06 Wed Oct  3 12:19:58 EDT 2012
+
+Code & doc cleanup before CPAN testing for official release
+
+[API CHANGE]
+
+* filehandle access mode should now be completely determined
+  internally; if not, it's not something the user can help with.
+
+
+v0.02_05 Tue Oct  2 15:33:43 EDT 2012
+
+[BUG FIX]
+
+* fix on Perl 5.10.x, hopefully; see ChangeLog for details
+
+v0.02_04 Mon Oct  1 20:24:26 EDT 2012
+
+[BUG FIX]
+
+* restore accidently deleted code loading IO::Handle; hopefully fixes
+  CPAN Testers failures on some early 5.10.x builds
+
+v0.02_03 Mon Oct  1 11:38:27 EDT 2012
+
+[BUG FIX]
+
+* use FileHandle::Fmode to determine access mode for filehandles instead
+  of fcntl (and thus hopefully work on Windows)
+
+v0.02_02 Thu Sep 27 17:35:02 EDT 2012
+
+
+[BUILD]
+
+* add Test::Exception test requirement
+
+
+v0.02_01 Thu Sep 27 13:30:01 EDT 2012
+
+[BUILD]
+
+* add Try::Tiny requirement
+
 v0.02  Thu Sep 27 09:49:33 EDT 2012
 
 [MISC]

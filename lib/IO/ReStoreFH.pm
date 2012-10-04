@@ -266,7 +266,7 @@ is destroyed.
 The passed filehandle failed a check to ensure that it was an open
 filehandle.  Make sure it's a) a real filehandle; b) it's open.
 
-=item C<< inexplicable error: unable to determine mode for \$fh >>
+=item C<< inexplicable error: unable to determine mode for $fh >>
 
 B<IO::ReStoreFH> was unable to get the access mode for the passed file
 handle.  Are you sure that it's really a filehandle object?

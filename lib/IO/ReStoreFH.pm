@@ -26,7 +26,7 @@ use 5.10.0;
 use strict;
 use warnings;
 
-use version 0.77; our $VERSION = qv( "v0.02_06" );
+use version 0.77; our $VERSION = qv( "v0.03" );
 
 use FileHandle::Fmode ':all';
 

@@ -7,6 +7,9 @@ author 'Diab Jerius';
 license 'gpl3';
 all_from 'lib/IO/ReStoreFH.pm';
 
+repository 'http://bitbucket.org/djerius/io-restorefh';
+bugtracker 'https://rt.cpan.org/Public/Dist/Display.html?Name=IO-ReStoreFH';
+
 author_tests( 'xt' );
 
 test_requires 'Test::More', 0.96;

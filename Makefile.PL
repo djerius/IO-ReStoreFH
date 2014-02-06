@@ -9,7 +9,7 @@ all_from 'lib/IO/ReStoreFH.pm';
 
 author_tests( 'xt' );
 
-test_requires 'Test::More';
+test_requires 'Test::More', 0.96;
 test_requires 'Test::File::Contents', 0.20;
 test_requires 'Test::Exception';
 

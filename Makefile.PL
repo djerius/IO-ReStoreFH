@@ -16,7 +16,7 @@ test_requires 'Test::Exception';
 author_requires 'Test::NoBreakpoints';
 auto_install;
 
-requires 'FileHandle::Fmode';
+requires 'FileHandle::Fmode', 0.12;
 requires 'Try::Tiny';
 
 WriteAll;

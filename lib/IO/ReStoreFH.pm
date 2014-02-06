@@ -82,11 +82,8 @@ sub store {
 		# now that we are sure that everything is loaded,
 		# check if it is an open filehandle; this doesn't disambiguate
 		# between objects that aren't filehandles or closed filehandles.
-
-		# FileHandle::Fname::is_FH (v0.11) alters global $_, which is
-		# not good
 		croak( "\$fh is not an open filehandle\n" )
-		  unless do{ local $_; is_FH( $fh ) };
+		  unless is_FH( $fh );
 
 		# get access mode; open documentation says mode must
 		# match that of original filehandle; do the best we can

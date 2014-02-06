@@ -28,6 +28,22 @@ use warnings;
 
 use version 0.77; our $VERSION = qv( "v0.03" );
 
+# In Perl 5.10.1 a use or require of FileHandle or something in the
+# FileHandle hierarchy (like FileHandle::Fmode, below) will cause the
+# compiler to creat a stash for FileHandle.  Then, there's some
+# code in Perl_newio which checks if FileHandle has been loaded (just
+# by checking for the stash) and aliases it to IO::Handle.
+#
+#  This it mucks up method calls on filehandles if FileHandle isn't
+#  actually loaded, resulting in errors such as
+#
+#   Can't locate object method "getline" via package "FileHandle"
+#
+# see http://perlmonks.org/?node_id=1073753, and tobyink's reply
+
+# So, we explicitly load FileHandle on 5.10.x to avoid these action
+# at a distance problems.
+use if $^V ge v5.10.0 && $^V lt v5.11.0, 'FileHandle';
 use FileHandle::Fmode ':all';
 
 use POSIX qw[ dup dup2 ceil floor ];
@@ -60,15 +76,8 @@ sub store {
 
 	if ( ref( $fh ) || 'GLOB' eq ref( \$fh ) ) {
 
-		# open() on Perl 5.10.x seems to return FileHandle objects,
-		# and that requires loading the package before it can find its
-		# fileno method.  Skinner box experimentation leads to
-		# the following code to check for that:
-
 		# need a glob
 		my $glob = 'GLOB' eq ref( $fh ) ? ${$fh} : undef;
-		require FileHandle
-		  if defined $glob && *{$glob}{IO}->isa( 'FileHandle' );
 
 		# now that we are sure that everything is loaded,
 		# check if it is an open filehandle; this doesn't disambiguate

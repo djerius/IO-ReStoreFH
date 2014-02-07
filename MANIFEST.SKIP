@@ -17,3 +17,4 @@ CVS/
 ^MYMETA
 ^cover_db
 #
+\.bak$

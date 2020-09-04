@@ -1,12 +1,12 @@
+#! perl
+
 use Test::More;
-
 use IO::Handle;
-
 use IO::ReStoreFH;
-
 use Test::Exception;
+use Test::Lib;
 
-use t::test;
+use My::Test;
 
 test_wfh 'new: fh >', '>',
          sub { IO::ReStoreFH->new( $_[0] ) };

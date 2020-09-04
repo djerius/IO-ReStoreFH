@@ -1,4 +1,3 @@
-
 use File::Temp;
 
 use Test::More;
@@ -11,9 +10,9 @@ sub test_wfh {
 
     subtest $desc, sub {
 
-	    my $tmp1 = File::Temp->new;
-	    open my $fh, $mode, $tmp1
-	      or die "error creating fh $tmp1\n";
+            my $tmp1 = File::Temp->new;
+            open my $fh, $mode, $tmp1
+              or die "error creating fh $tmp1\n";
 
         my $tmp2 = File::Temp->new;
 
@@ -37,8 +36,8 @@ sub test_wfh {
         file_contents_eq_or_diff( $tmp2->filename, "dup\n",
             "redirect fh to file; write to dup" );
 
-	    $fh->print( "after\n" );
-	    close( $fh );
+            $fh->print( "after\n" );
+            close( $fh );
 
         file_contents_eq_or_diff( $tmp1->filename,
                                   "during\nafter\n",

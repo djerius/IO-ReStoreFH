@@ -1,13 +1,11 @@
 #!perl
 
-use Test::More;
-use Test::File::Contents;
+use Test2::V0;
+use File::Slurper 'read_text';
+use POSIX ();
+use File::Temp;
 
 use IO::ReStoreFH;
-
-use POSIX ();
-
-use File::Temp;
 
 # file descriptor
 {
@@ -47,11 +45,9 @@ use File::Temp;
 
         POSIX::close( $fd);
 
-    file_contents_eq( $tmp->filename, "write $fd\nwrite $fd\n",
-        "redirect fd; initial file" );
+    is( read_text($tmp->filename), "write $fd\nwrite $fd\n", "redirect fd; initial file" );
 
-    file_contents_eq( $tmp2->filename, "write $fd2\n",
-        "redirect fd; redirected file" );
+    is( read_text( $tmp2->filename), "write $fd2\n", "redirect fd; redirected file" );
 
 }
 

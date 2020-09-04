@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  [BUILD]
+
+    * already building a Build.PL; don't also build Makefile.PL
+
 0.06      2020-09-03 22:21:17-04:00 America/New_York
 
   [BUILD]

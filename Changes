@@ -1,4 +1,11 @@
-Revision history for IO-ReStoreFH
+Revision history for {{$dist->name}}
+
+{{$NEXT}}
+
+  [BUILD]
+
+    * switch to Dist::Zilla from Module::Install
+    * switch to Test2
 
 0.05	2014-02-14T15:58:07-0500
 

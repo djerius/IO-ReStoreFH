@@ -7,7 +7,7 @@ use 5.10.0;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # In Perl 5.10.1 a use or require of FileHandle or something in the
 # FileHandle hierarchy (like FileHandle::Fmode, below) will cause the
@@ -52,9 +52,6 @@ sub store {
     # a filehandle object of somesort
 
     if ( ref( $fh ) || 'GLOB' eq ref( \$fh ) ) {
-
-        # need a glob
-        my $glob = 'GLOB' eq ref( $fh ) ? ${$fh} : undef;
 
         # now that we are sure that everything is loaded,
         # check if it is an open filehandle; this doesn't disambiguate

@@ -20,8 +20,8 @@ for my $fh ( \*STDOUT, *STDERR ) {
         $fh->print( "$fh\n" );
     }
 
-    is( read_text( $tmp->filename), "$fh\n", "redirect $fh to file; implicit close" );
+    is( read_text( $tmp->filename ),
+        "$fh\n", "redirect $fh to file; implicit close" );
 }
-
 
 done_testing;

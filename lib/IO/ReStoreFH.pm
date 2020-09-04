@@ -27,7 +27,7 @@ our $VERSION = '0.05';
 use if $^V ge v5.10.0 && $^V lt v5.11.0, 'FileHandle';
 
 use FileHandle::Fmode ();
-use POSIX ();
+use POSIX             ();
 use IO::Handle;
 use Scalar::Util;
 use Try::Tiny ();
@@ -38,98 +38,100 @@ sub _croak {
 }
 
 sub new {
-        my $class = shift;
+    my $class = shift;
 
-        my $obj = bless { dups => [] }, $class;
-        $obj->store( $_ ) for @_;
-        return $obj;
+    my $obj = bless { dups => [] }, $class;
+    $obj->store( $_ ) for @_;
+    return $obj;
 }
 
 sub store {
-        my ( $self, $fh ) = @_;
+    my ( $self, $fh ) = @_;
 
-        # if $fh is a reference, or a GLOB, it's probably
-        # a filehandle object of somesort
+    # if $fh is a reference, or a GLOB, it's probably
+    # a filehandle object of somesort
 
-        if ( ref( $fh ) || 'GLOB' eq ref( \$fh ) ) {
+    if ( ref( $fh ) || 'GLOB' eq ref( \$fh ) ) {
 
-                # need a glob
-                my $glob = 'GLOB' eq ref( $fh ) ? ${$fh} : undef;
+        # need a glob
+        my $glob = 'GLOB' eq ref( $fh ) ? ${$fh} : undef;
 
-                # now that we are sure that everything is loaded,
-                # check if it is an open filehandle; this doesn't disambiguate
-                # between objects that aren't filehandles or closed filehandles.
-                _croak( "\$fh is not an open filehandle\n" )
-                  unless FileHandle::Fmode::is_FH( $fh );
+        # now that we are sure that everything is loaded,
+        # check if it is an open filehandle; this doesn't disambiguate
+        # between objects that aren't filehandles or closed filehandles.
+        _croak( "\$fh is not an open filehandle\n" )
+          unless FileHandle::Fmode::is_FH( $fh );
 
-                # get access mode; open documentation says mode must
-                # match that of original filehandle; do the best we can
-                my $mode
-                  = FileHandle::Fmode::is_RO( $fh )                ? '<'
-                  : FileHandle::Fmode::is_WO( $fh )                ? '>'
-                  : FileHandle::Fmode::is_W( $fh ) && FileHandle::Fmode::is_R( $fh )  ? '+<'
-                  :                                undef;
+        # get access mode; open documentation says mode must
+        # match that of original filehandle; do the best we can
+        my $mode
+          = FileHandle::Fmode::is_RO( $fh ) ? '<'
+          : FileHandle::Fmode::is_WO( $fh ) ? '>'
+          : FileHandle::Fmode::is_W( $fh )
+          && FileHandle::Fmode::is_R( $fh ) ? '+<'
+          : undef;
 
-                # give up
-                _croak(
-                        "inexplicable error: unable to determine mode for \$fh;\n"
-                ) if !defined $mode;
+        # give up
+        _croak( "inexplicable error: unable to determine mode for \$fh;\n" )
+          if !defined $mode;
 
-                $mode .= '>' if FileHandle::Fmode::is_A( $fh );
+        $mode .= '>' if FileHandle::Fmode::is_A( $fh );
 
-                # dup the filehandle
-                open my $dup, $mode . '&', $fh
-                  or _croak( "error fdopening \$fh: $!\n" );
+        # dup the filehandle
+        open my $dup, $mode . '&', $fh
+          or _croak( "error fdopening \$fh: $!\n" );
 
-                push @{ $self->{dups} }, { fh => $fh, mode => $mode, dup => $dup };
-        }
+        push @{ $self->{dups} }, { fh => $fh, mode => $mode, dup => $dup };
+    }
 
-        elsif ( Scalar::Util::looks_like_number( $fh ) && POSIX::ceil( $fh ) == POSIX::floor( $fh ) ) {
+    elsif (Scalar::Util::looks_like_number( $fh )
+        && POSIX::ceil( $fh ) == POSIX::floor( $fh ) )
+    {
 
-                # as the caller specifically used an fd, don't go through Perl's
-                # IO system
-                my $dup = POSIX::dup( $fh )
-                  or _croak( "error dup'ing file descriptor $fh: $!\n" );
+        # as the caller specifically used an fd, don't go through Perl's
+        # IO system
+        my $dup = POSIX::dup( $fh )
+          or _croak( "error dup'ing file descriptor $fh: $!\n" );
 
-                push @{ $self->{dups} }, { fd => $fh, dup => $dup };
-        }
+        push @{ $self->{dups} }, { fd => $fh, dup => $dup };
+    }
 
-        else {
-                _croak(
-                        "\$fh must be opened Perl filehandle or object or integer file descriptor\n"
-                  )
-        }
+    else {
+        _croak(
+            "\$fh must be opened Perl filehandle or object or integer file descriptor\n"
+        );
+    }
 
-        return;
+    return;
 }
 
 sub restore {
-        my $self = shift;
+    my $self = shift;
 
-        my $dups = $self->{dups};
-        ## no critic (ProhibitAccessOfPrivateData)
-        while ( my $dup = pop @{$dups} ) {
+    my $dups = $self->{dups};
+    ## no critic (ProhibitAccessOfPrivateData)
+    while ( my $dup = pop @{$dups} ) {
 
-                if ( exists $dup->{fd} ) {
-                        POSIX::dup2( $dup->{dup}, $dup->{fd} )
-                          or _croak( "error restoring file descriptor $dup->{fd}: $!\n" );
-                        POSIX::close( $dup->{dup} );
-                }
-
-                else {
-                        open( $dup->{fh}, $dup->{mode} . '&', $dup->{dup} )
-                          or _croak( "error restoring file handle $dup->{fh}: $!\n" );
-                        close( $dup->{dup} );
-                }
+        if ( exists $dup->{fd} ) {
+            POSIX::dup2( $dup->{dup}, $dup->{fd} )
+              or _croak( "error restoring file descriptor $dup->{fd}: $!\n" );
+            POSIX::close( $dup->{dup} );
         }
-        return;
+
+        else {
+            open( $dup->{fh}, $dup->{mode} . '&', $dup->{dup} )
+              or _croak( "error restoring file handle $dup->{fh}: $!\n" );
+            close( $dup->{dup} );
+        }
+    }
+    return;
 }
 
 sub DESTROY {
-        my $self = shift;
-        Try::Tiny::try { $self->restore }
-        Try::Tiny::catch { _croak $_ };
-        return;
+    my $self = shift;
+    Try::Tiny::try { $self->restore }
+    Try::Tiny::catch { _croak $_ };
+    return;
 }
 
 1;

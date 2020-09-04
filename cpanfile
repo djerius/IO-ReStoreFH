@@ -29,7 +29,6 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "ExtUtils::MakeMaker" => "0";
   requires "Module::Build::Tiny" => "0.034";
 };
 

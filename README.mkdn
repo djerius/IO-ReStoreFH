@@ -4,7 +4,7 @@ IO::ReStoreFH - store/restore file handles
 
 # VERSION
 
-version 0.10
+version 0.11
 
 # SYNOPSIS
 
